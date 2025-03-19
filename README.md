@@ -9,9 +9,9 @@ Issues?  Email us at `support@genai-logic.com`
 ## Install GenAI-Logic and WebGenAI
 
 To install WebGenAI:
-1. Choose an install location (e.g., `~/dev/genai-logic)
+1. Choose an install location (e.g., `~/dev/genai-logic`)
     * This should have sufficient disk space for your systems, including the databases
-2. Download and unzip this project, either [from here]https://github.com/GenAI-Logic/genai_logic) (see screenshot at end), or using curl:
+2. Download and unzip this project, either [from here](https://github.com/GenAI-Logic/genai_logic) (see screenshot at end), or using curl:
 ```bash
 cd genai-logic
 curl -LJO https://github.com/GenAI-Logic/genai-logic/archive/refs/heads/main.zip
@@ -27,7 +27,7 @@ cd genai_logic-main
         2. Authorize payments [here](https://platform.openai.com/settings/organization/billing/overview)
     2. Update this file with your OpenAI API Key: `webgenai/docker-compose-webg.yml`.
 
-![install-setup](webgenai/webg_config/install-setup.png)
+![install-setup](webgenai/images/install-setup.png)
 
 &nbsp;
 
@@ -42,6 +42,33 @@ sh run_web_genai.sh
 Open your browser at [http://localhost:8282](http://localhost:8282).
 
 Find the [documentation here](https://apilogicserver.github.io/Docs/WebGenAI/).
+
+&nbsp;
+
+## Verify the installation
+
+Open your browser at [http://localhost:8282/admin-app/#/Home?demo=genai_demo](http://localhost:8282/admin-app/#/Home?demo=genai_demo), and follow these steps:
+
+![install-setup](./webgenai/images/1-create-demo.png)
+![install-setup](./webgenai/images/2-open-app.png)
+![install-setup](./webgenai/images/3-landing-page.png)
+![install-setup](./webgenai/images/4-customer.png)
+![install-setup](./webgenai/images/5-item-upd.png)
+
+The constraint is produced by the business logic:
+* The quantity change recomputed the amount (rule 4)
+* The amount adjusted the amount_total (rule 3)
+* The amount_total adjusted the balance (rule 2)
+* The balance exceeded the credit limit (rule 1), which produced the message and reverted the transaction
+
+```bash
+Use case: Check Credit    
+    1. The Customer's balance is less than the credit limit
+    2. The Customer's balance is the sum of the Order amount_total where date_shipped is null
+    3. The Order's amount_total is the sum of the Item amount
+    4. The Item amount is the quantity * unit_price
+    5. The Item unit_price is copied from the Product unit_price
+```
 
 &nbsp;
 
@@ -76,14 +103,14 @@ To run a different sample, replace `nw_sample` with the sample directory.  Only 
 
 ## Creating projects from existing databases
 
-TBD
+Coming soon
 
 &nbsp;
 
 ## Debugging Projects in VSCode
 
-TBD
+Coming soon
 
 ## Acquire from git
 
-![acquire](webgenai/webg_config/acquire.png)
+![acquire](webgenai/images/acquire.png)
