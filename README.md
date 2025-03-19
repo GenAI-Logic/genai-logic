@@ -11,11 +11,11 @@ Issues?  Email us at `support@genai-logic.com`
 To install WebGenAI:
 1. Choose an install location (e.g., `~/dev/genai-logic)
     * This should have sufficient disk space for your systems, including the databases
-2. Download and unzip this project, either [from here]https://github.com/GenAI-Logic/genai_logic), or using curl:
+2. Download and unzip this project, either [from here]https://github.com/GenAI-Logic/genai_logic) (see screenshot at end), or using curl:
 ```bash
 cd genai-logic
-curl -LJO https://github.com/GenAI-Logic/genai_logic/archive/refs/heads/main.zip
-unzip genai_logic-main.zip
+curl -LJO https://github.com/GenAI-Logic/genai-logic/archive/refs/heads/main.zip
+unzip genai-logic-main.zip
 cd genai_logic-main
 ```
 3. While not required, you may wish to open your IDE to this location
@@ -83,3 +83,7 @@ TBD
 ## Debugging Projects in VSCode
 
 TBD
+
+## Acquire from git
+
+![acquire](webgenai/webg_config/acquire.png)
