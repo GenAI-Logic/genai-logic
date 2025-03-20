@@ -114,4 +114,4 @@ Coming soon
 
 ## Acquire from git
 
-![acquire](webgenai/webg_config/acquire.png)
+![acquire](webgenai/images/acquire.png)
