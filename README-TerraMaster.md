@@ -6,9 +6,9 @@ Issues?  Email us at `support@genai-logic.com`
 
 &nbsp;
 
-## Install GenAI-Logic and WebGenAI
+## Prerequisites for installing API-in-a-Box™
 
-To install WebGenAI:
+It is recommended to get a local copy of WebGenAI:
 1. Choose an install location (e.g., `~/dev/genai-logic`)
     * This should have sufficient disk space for your systems, including the databases
 2. Download and unzip this project, either [from here](https://github.com/GenAI-Logic/genai_logic) (see screenshot at end), or using curl:
@@ -18,7 +18,7 @@ curl -LJO https://github.com/GenAI-Logic/genai-logic/archive/refs/heads/main.zip
 unzip genai-logic-main.zip
 cd genai-logic-main
 ```
-3. While not required, you may wish to open your IDE to this location
+3. We'll use a local editor to open the you IDE to this location
 4. Update your `webgenai/docker-compose-webg.yml`:
     1. Copy the license key you received in the registration email over: `- GENAI_LOGIC_APIKEY=<paste license here from registration email>`
         * If you have not already registered, please visit the [registration page](http://registration-genailogic.com/registration.html) to obtain a license key.
@@ -28,7 +28,7 @@ cd genai-logic-main
             2. Authorize payments [here](https://platform.openai.com/settings/organization/billing/overview)
         2. Update the key in this line: `- APILOGICSERVER_CHATGPT_APIKEY=<sk-proj-your-openai-key-here>`.
 
-![install-setup](webgenai/images/install-setup.png)
+![install-setup](webgenai/images/terra-master-desktop-with-docker-manager.png)
 
 &nbsp;
 
