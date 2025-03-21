@@ -93,12 +93,13 @@ When your project is running, you cannot edit it and you must first stop the pro
 
 ## To Run WebGenAI
 
-Once you have completed the install, (above), you can start WebGenAI.
+Once you have completed the install, (above), you can start WebGenAI.  To start API-in-a-Box™, navigate to the Projects tab in the Docker Manager and click on the WebGenAI tile in the Projects list.  Along the top edge of the Project list, you can see the `Start` `Restart` and `Stop` buttons.  Validate the Project ius `Running`.
 
+![install-setup](webgenai/images/create_project_running.png)
 
-Open your browser at [http://my-tnas.local:8282](http://my-tnas.local:8282).
+Now open your browser at [http://my-tnas.local:8282](http://my-tnas.local:8282).
 
-Find the [documentation here](https://apilogicserver.github.io/Docs/WebGenAI/).
+You can find the [documentation here](https://apilogicserver.github.io/Docs/WebGenAI/).
 
 &nbsp;
 
