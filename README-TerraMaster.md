@@ -28,9 +28,56 @@ cd genai-logic-main
             2. Authorize payments [here](https://platform.openai.com/settings/organization/billing/overview)
         2. Update the key in this line: `- APILOGICSERVER_CHATGPT_APIKEY=<sk-proj-your-openai-key-here>`.
 
-![install-setup](webgenai/images/terra-master-desktop-with-docker-manager.png)
 
 &nbsp;
+
+## Login into your TerraMaster NAS
+
+![install-setup](webgenai/images/terra-master-desktop-with-docker-manager.png)
+
+It is recommended to have a DNS name associated to your TNAS (TerraMaster network attached storage) device.  To do this, you can edit your ![alt text](create_project_select_yaml_location.png) file adding the actual IP address for your TNAS.  
+
+```bash
+...
+<XXX.XXX.XXX.XXX>      my-tnas          my-tnas.local
+...
+```
+
+Replace <XXX.XXX.XXX.XXX> with the IP address of your TNAS device.  When providing a name for your TNAS, you can immediately access the device from your browser using that name.  E.g., http://my-tnas.local:5443  Be aware, you may get a warning in your browser when using `http` vs. `https` until such a time when you implement SSL/TLS certificates.
+
+&nbsp;
+
+## Open Docker Manager app within your TNAS Desktop
+
+![install-setup](webgenai/images/terra-master-docker-manager.png)
+
+Open Docker Manager and switch to the Projects tab.  
+
+![install-setup](webgenai/images/docker-manager-projects.png)
+
+Add a new Project by clicking the [+] plus button at the top edge of the Projects list.  The Create Project dialog opens.
+
+![install-setup](webgenai/images/docker-manager-create-project.png)
+
+Complete the form by gibing your project a name (e.g., `my-web-genie`) and select the path for your project.  Click the [+] button at the top edge of the Directory list to add a sub-folder.  Select the sub-folder and click [Apply] button to apply the path to your project.
+
+![install-setup](webgenai/images/create_project_select_directory.png)
+
+Update your projects `yaml` file by selecting the dropdown menu and specify `Create a YAML file` from the list.  In the edit form, paste your edited `yaml` file.  You must click the [Verify YAML] button before clicking [Apply]
+
+![install-setup](webgenai/images/create_project_select_yaml_location.png)
+
+The docker project is built and the Docker Manager will attempt start the project.
+
+![install-setup](webgenai/images/create_project_building.png)
+
+If your project is started successfully, you'll see your new Project listed in the Projects list and it will be marked as `Running...`.  To stop or restart your project, use the controls along the top edge of the Projects list.
+
+![install-setup](webgenai/images/create_project_running.png)
+
+## Edit Project in Docker Manager
+
+You cannot edit a project while it is running, you must stop the project first.  Hover your mouse over the controls along the top of the list, to see a callout showing each button's purpose.  You'll see the `Edit` button highlight only after selecting the Project tile in the list and only if that Project is `Stopped`.  When Editing a project, a user can only edit the project's `yaml` file.  E.g., updating your `APILOGICSERVER_CHATGPT_APIKEY` or `GENAI_LOGIC_APIKEY` can easily be accomplished in this way.  Users are prohibited from updating the other setting within the project.  Therefore, to change a project's path, or rename your project, you simply delete it and recreate the project again.
 
 ## To Run WebGenAI
 
