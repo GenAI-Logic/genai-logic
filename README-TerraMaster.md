@@ -35,7 +35,7 @@ cd genai-logic-main
 
 ![install-setup](webgenai/images/terra-master-desktop-with-docker-manager.png)
 
-It is recommended to have a DNS name associated to your TNAS (TerraMaster network attached storage) device.  To do this, you can edit your `/etc/hosts` file adding the actual IP address for your TNAS.  
+It is recommended to have a DNS name associated to your TNAS (TerraMaster network attached storage) device.  To do this, you can edit your `/etc/hosts` file adding the IP address for your TNAS.  
 
 ```bash
 ...
@@ -43,7 +43,7 @@ It is recommended to have a DNS name associated to your TNAS (TerraMaster networ
 ...
 ```
 
-Replace <XXX.XXX.XXX.XXX> with the IP address of your TNAS device.  When providing a name for your TNAS, you can immediately access the device from your browser using that name.  E.g., http://my-tnas.local:5443  Be aware, you may get a warning in your browser when using `http` vs. `https` until such a time when you implement SSL/TLS certificates.
+Replace <XXX.XXX.XXX.XXX> with the actual IP address of your TNAS device.  When providing a name for your TNAS, you can immediately access the device from your browser using that name.  E.g., `http://my-tnas.local:5443`  Be aware, you may get a warning in your browser when using `http` vs. `https` until such a time when you implement SSL/TLS certificates.  You will be redirected to the Login screen, if not already authenticated to the device.
 
 &nbsp;
 
