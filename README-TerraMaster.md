@@ -43,7 +43,9 @@ It is recommended to have a DNS name associated to your TNAS (TerraMaster networ
 ...
 ```
 
-Replace <XXX.XXX.XXX.XXX> with the actual IP address of your TNAS device.  When providing a name for your TNAS, you can immediately access the device from your browser using that name.  E.g., `http://my-tnas.local:5443`  Be aware, you may get a warning in your browser when using `http` vs. `https` until such a time when you implement SSL/TLS certificates.  You will be redirected to the Login screen, if not already authenticated to the device.
+Replace `XXX.XXX.XXX.XXX` with the actual IP address of your TNAS device.  When providing a name for your TNAS, you can immediately access the device from your browser using that name.  E.g., `http://my-tnas.local:5443`  Be aware, you may get a warning in your browser when using `http` vs. `https` until such a time when you implement SSL/TLS certificates.  You you can bypass this warning, and proceed to the TNAS device.  Once you do, will be redirected to the Login screen, if not already authenticated.
+
+![install-setup](webgenai/images/browser_warning_http.png)
 
 &nbsp;
 
