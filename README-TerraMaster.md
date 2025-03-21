@@ -1,9 +1,3 @@
-<style>
-r { color: Red }
-o { color: Orange }
-g { color: Green }
-</style>
-
 # Welcome to GenAI-Logic
 
 Thankyou for installing!  We very much appreciate your interest, and are determined to make your experience as productive as possible.
@@ -49,7 +43,7 @@ It is recommended to have a DNS name associated to your TNAS (TerraMaster networ
 ...
 ```
 
-Replace `XXX.XXX.XXX.XXX` with the actual IP address of your TNAS device.  When providing a name for your TNAS, you can immediately access the device from your browser using that name.  E.g., [http://my-tnas.local:5443](http://my-tnas.local:5443)  Be aware, you may get a <r>warning</r> in your browser when using `http` vs. `https` until such a time when you implement SSL/TLS certificates.  You you can bypass this warning, and proceed to the TNAS device.  Once you do, will be redirected to the Login screen, if not already authenticated.
+Replace `XXX.XXX.XXX.XXX` with the actual IP address of your TNAS device.  When providing a name for your TNAS, you can immediately access the device from your browser using that name.  E.g., [http://my-tnas.local:5443](http://my-tnas.local:5443)  Be aware, you may get a $${\color{red}{warning}} in your browser when using `http` vs. `https` until such a time when you implement SSL/TLS certificates.  You you can bypass this warning, and proceed to the TNAS device.  Once you do, will be redirected to the Login screen, if not already authenticated.
 
 ![install-setup](webgenai/images/browser_warning_http.png)
 
