@@ -12,18 +12,18 @@ For any issues, please use the online community support forum [Community support
 
 ## Prerequisites
 
-Before installing, you should have installed Docker Engine and the Docker Manager into your TNAS device.  In addition to Docker, it's recommended to get a local copy of WebGenAI.  Although it is not required, if you like, you can simple grab a copy of the online [docker compose](https://github.com/GenAI-Logic/genai-logic/blob/API-in-a-Box/webgenai/docker-compose-webg.yml) file.
-1. Just save the file, or download the project to a local folder (e.g., `~/dev/genai-logic`)
-    * Your TNAS should have sufficient disk space for WebGenAI to store its contents, including the internal database used to manage your projects.
-2. Now, optionally download and unzip the project, either [from here](https://github.com/GenAI-Logic/genai_logic) (see screenshot at end), or using the following commands in your terminal app:
+Before installing, you should have installed Docker Engine and the Docker Manager into your TNAS device.  In addition to Docker, you'll also download a local copy of WebGenAI project.
+1. Select a location for the project download within you local system (e.g., `~/dev/genai-logic`)
+    * Your TNAS should have sufficient disk space for WebGenAI to store its contents, including the internal database used to manage your projects.  WebGenAI's database can grow over time as you use it.
+2. Now, download and unzip the project, either [from here](https://github.com/GenAI-Logic/genai_logic) (see screenshot at end), or using the following commands in your terminal app:
 ```bash
 cd genai-logic
 curl -LJO https://github.com/GenAI-Logic/genai-logic/archive/refs/heads/main.zip
 unzip genai-logic-main.zip
 cd genai-logic-main
 ```
-3. You'll use a local editor to open the docker compose file, or open an IDE to this location.
-4. Now, update your `webgenai/docker-compose-webg.yml`:
+3. Now, use a local editor to open the docker compose file, or open an IDE to this location.
+4. Update your local version of `webgenai/docker-compose-webg.yml` before copying the project to the TNAS shared directory as described below.
     1. Copy the license key you received in the registration email over: `- GENAI_LOGIC_APIKEY=<paste license here from registration email>`
         * If you have not already registered, please visit the [registration page](http://registration-genailogic.com/registration.html) to obtain a license key.
     5. GenAI-Logic uses OpenAI, which requires an Open API Key:
@@ -31,7 +31,6 @@ cd genai-logic-main
             1. Obtain one from [here](https://platform.openai.com/account/api-keys) or [here](https://platform.openai.com/api-keys)
             2. Authorize payments [here](https://platform.openai.com/settings/organization/billing/overview)
         2. Update the key in this line: `- APILOGICSERVER_CHATGPT_APIKEY=<sk-proj-your-openai-key-here>`.
-
 
 &nbsp;
 
@@ -148,7 +147,7 @@ To run the default sample:
 sh run_sample.sh nw_sample
 ```
 
-And then open your browser at [http://localhost:5656](http://localhost:5656).
+And then open your browser at [http://my-tnas.local:5656](http://my-tnas.local:5656).
 
 To run a different sample, replace `nw_sample` with the sample directory.  Only 1 sample can be running at a time.
 
