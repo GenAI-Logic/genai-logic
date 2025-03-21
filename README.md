@@ -6,16 +6,18 @@ Thank you for installing!
 
 API-in-a-Box™ is the community edition of [WebGenAI](https://www.genai-logic.com/product/kickstart-with-logic-dev-friendly) by [GenAI Logic](https://www.genai-logic.com/) installed on your TerraMaster TNAS device.  We very much appreciate your interest, and are determined to make your experience as productive as possible.
 
-For any issues, the online community support forum [Community support](https://forum.terra-master.com/en/viewforum.php?f=109&sid=d0e3c7024814a419da46aa8ffca51a97) is moderated by [Imagery Business Systems, LLC](https://imagery-business-systems.com/api-in-a-box)
+For any issues, please use the online community support forum [Community support](https://forum.terra-master.com/en/viewforum.php?f=109&sid=d0e3c7024814a419da46aa8ffca51a97) moderated by [Imagery Business Systems, LLC](https://imagery-business-systems.com/api-in-a-box)
 
 &nbsp;
 
-## Prerequisites for installing API-in-a-Box™
+## Prerequisites
 
-It is recommended to get a local copy of WebGenAI:
-1. Choose an install location (e.g., `~/dev/genai-logic`)
-    * This should have sufficient disk space for your systems, including the databases
-2. Download and unzip this project, either [from here](https://github.com/GenAI-Logic/genai_logic) (see screenshot at end), or using curl:
+You should have Docker Engine and the Docker Manager already installed in your TNAS device.  
+
+It's also recommended for you to get a local copy of WebGenAI.  Although it is not required, if you like, you can simple grab a copy of the online [docker compose](https://github.com/GenAI-Logic/genai-logic/blob/API-in-a-Box/webgenai/docker-compose-webg.yml) file.
+1. Just save the file, or download the project to a local folder (e.g., `~/dev/genai-logic`)
+    * Your TNAS should have sufficient disk space for WebGenAI to store its contents, including the internal database used to manage your projects.
+2. No optionally, download and unzip this project, either [from here](https://github.com/GenAI-Logic/genai_logic) (see screenshot at end), or using the following commands in your terminal app:
 ```bash
 cd genai-logic
 curl -LJO https://github.com/GenAI-Logic/genai-logic/archive/refs/heads/main.zip
@@ -57,7 +59,7 @@ Replace `XXX.XXX.XXX.XXX` with the actual IP address of your TNAS device.  When 
 
 ![install-setup](webgenai/images/terra-master-docker-manager.png)
 
-You should have preinstalled the Docker Engine, and Docker Manager into your TNAS prior to installing API-in-a-Box™.  Once complete, open Docker Manager and switch to the Projects tab.  
+Loginto your TNAS device, open Docker Manager by clicking the ICO on the TNAS Desktop, then switch to the Projects tab.  
 
 ![install-setup](webgenai/images/docker-manager-projects.png)
 
