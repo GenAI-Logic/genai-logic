@@ -1,8 +1,8 @@
-# Welcome to GenAI-Logic
+# Welcome to API-in-a-Box™
 
-Thankyou for installing!  We very much appreciate your interest, and are determined to make your experience as productive as possible.
+Thank you for installing!  API-in-a-Box™ consists of [WebGenAI](https://www.genai-logic.com/) by GenAI Logic.  We very much appreciate your interest, and are determined to make your experience as productive as possible.
 
-Issues?  Email us at `support@genai-logic.com`
+Use community support forum: [Community support](https://forum.terra-master.com/en/viewforum.php?f=109&sid=d0e3c7024814a419da46aa8ffca51a97)
 
 &nbsp;
 
@@ -43,7 +43,7 @@ It is recommended to have a DNS name associated to your TNAS (TerraMaster networ
 ...
 ```
 
-Replace `XXX.XXX.XXX.XXX` with the actual IP address of your TNAS device.  When providing a name for your TNAS, you can immediately access the device from your browser using that name.  E.g., [http://my-tnas.local:5443](http://my-tnas.local:5443)  Be aware, you may get a "`-! Warning !-` in your browser when using `http` vs. `https` until such a time when you implement SSL/TLS certificates.  You you can bypass this warning, and proceed to the TNAS device.  Once you do, will be redirected to the Login screen, if not already authenticated.
+Replace `XXX.XXX.XXX.XXX` with the actual IP address of your TNAS device.  When providing a name for your TNAS, you can immediately access the device from your browser using that name.  E.g., [http://my-tnas.local:5443](http://my-tnas.local:5443)  Be aware, you may get a `-! Warning !-` in your browser when using `http` vs. `https` until such a time when you implement SSL/TLS certificates.  You you can bypass this warning, and proceed to the TNAS device.  Once you do, will be redirected to the Login screen, if not already authenticated.
 
 ![install-setup](webgenai/images/browser_warning_http.png)
 
@@ -61,7 +61,7 @@ Add a new Project by clicking the [+] plus button at the top edge of the Project
 
 ![install-setup](webgenai/images/docker-manager-create-project.png)
 
-Complete the form by gibing your project a name (e.g., `my-web-genie`) and select the path for your project.  Click the [+] button at the top edge of the Directory list to add a sub-folder.  Select the sub-folder and click [Apply] button to apply the path to your project.
+Complete the form by giving your project a name (e.g., `my-web-genie`) and select the path for your project.  Click the [+] button at the top edge of the Directory list to add a sub-folder.  Select the sub-folder and click [Apply] button to apply the path to your project.
 
 ![install-setup](webgenai/images/create_project_select_directory.png)
 
