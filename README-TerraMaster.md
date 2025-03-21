@@ -4,7 +4,7 @@ Thank you for installing!
 
 &nbsp;
 
-API-in-a-Box™ is the community edition of [WebGenAI](https://www.genai-logic.com/) by GenAI Logic installed on your TerraMaster TNAS device.  We very much appreciate your interest, and are determined to make your experience as productive as possible.
+API-in-a-Box™ is the community edition of [WebGenAI](https://www.genai-logic.com/product/kickstart-with-logic-dev-friendly) by [GenAI Logic](https://www.genai-logic.com/) installed on your TerraMaster TNAS device.  We very much appreciate your interest, and are determined to make your experience as productive as possible.
 
 For any issues, the online community support forum [Community support](https://forum.terra-master.com/en/viewforum.php?f=109&sid=d0e3c7024814a419da46aa8ffca51a97) is moderated by [Imagery Business Systems, LLC](https://imagery-business-systems.com/api-in-a-box)
 
