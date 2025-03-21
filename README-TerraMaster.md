@@ -2,7 +2,7 @@
 
 Thank you for installing!  API-in-a-Box™ consists of [WebGenAI](https://www.genai-logic.com/) by GenAI Logic.  We very much appreciate your interest, and are determined to make your experience as productive as possible.
 
-Use community support forum: [Community support](https://forum.terra-master.com/en/viewforum.php?f=109&sid=d0e3c7024814a419da46aa8ffca51a97)
+For any issues, please use online community support forum: [Community support](https://forum.terra-master.com/en/viewforum.php?f=109&sid=d0e3c7024814a419da46aa8ffca51a97)
 
 &nbsp;
 
