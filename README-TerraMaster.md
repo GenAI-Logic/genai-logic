@@ -1,3 +1,9 @@
+<style>
+r { color: Red }
+o { color: Orange }
+g { color: Green }
+</style>
+
 # Welcome to GenAI-Logic
 
 Thankyou for installing!  We very much appreciate your interest, and are determined to make your experience as productive as possible.
@@ -43,7 +49,7 @@ It is recommended to have a DNS name associated to your TNAS (TerraMaster networ
 ...
 ```
 
-Replace `XXX.XXX.XXX.XXX` with the actual IP address of your TNAS device.  When providing a name for your TNAS, you can immediately access the device from your browser using that name.  E.g., `http://my-tnas.local:5443`  Be aware, you may get a warning in your browser when using `http` vs. `https` until such a time when you implement SSL/TLS certificates.  You you can bypass this warning, and proceed to the TNAS device.  Once you do, will be redirected to the Login screen, if not already authenticated.
+Replace `XXX.XXX.XXX.XXX` with the actual IP address of your TNAS device.  When providing a name for your TNAS, you can immediately access the device from your browser using that name.  E.g., [http://my-tnas.local:5443](http://my-tnas.local:5443)  Be aware, you may get a <r>warning</r> in your browser when using `http` vs. `https` until such a time when you implement SSL/TLS certificates.  You you can bypass this warning, and proceed to the TNAS device.  Once you do, will be redirected to the Login screen, if not already authenticated.
 
 ![install-setup](webgenai/images/browser_warning_http.png)
 
@@ -53,7 +59,7 @@ Replace `XXX.XXX.XXX.XXX` with the actual IP address of your TNAS device.  When 
 
 ![install-setup](webgenai/images/terra-master-docker-manager.png)
 
-Open Docker Manager and switch to the Projects tab.  
+You should have preinstalled the Docker Engine, and Docker Manager into your TNAS prior to installing API-in-a-Box™.  Once complete, open Docker Manager and switch to the Projects tab.  
 
 ![install-setup](webgenai/images/docker-manager-projects.png)
 
@@ -83,13 +89,10 @@ You cannot edit a project while it is running, you must stop the project first. 
 
 ## To Run WebGenAI
 
-Once you have installed (above), start the server:
+Once you have completed the install, (above), you can start WebGenAI.
 
-```bash
-sh run_web_genai.sh
-```
 
-Open your browser at [http://localhost:8282](http://localhost:8282).
+Open your browser at [http://my-tnas.local:8282](http://my-tnas.local:8282).
 
 Find the [documentation here](https://apilogicserver.github.io/Docs/WebGenAI/).
 
