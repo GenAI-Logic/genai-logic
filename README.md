@@ -60,15 +60,15 @@ Login to your TNAS devic and open Docker Manager by clicking the ICON on the TNA
 
 ![install-setup](webgenai/images/docker-manager-projects.png)
 
-Now add a new Project by clicking the [+] plus button at the top edge of the Projects list.  The Create Project dialog opens as shown below.
+Now click the [+] plus button at the top edge of the Projects list to add a new Project.  The Create Project dialog opens as shown below.
 
 ![install-setup](webgenai/images/docker-manager-create-project.png)
 
-Complete the form (all fields are required) by providing a project name (e.g., `my-web-genie`) and select the path for your project.  Click on the [Folder] icon to browse the TNAS file-system. In the Directory browser, navigate to the desired location for your project's home, then click the [+] button at the top edge of the Directory list to add a [sub-folder].  After creating it, select the sub-folder then click [Apply] to apply the path to your project.
+Complete the New Project dialog (all fields are required) by providing a project name (e.g., `my-web-genie`).  To select a path, click on the [Folder] icon and browse the TNAS file-system. In the Directory browser, navigate to the desired location and click the [+] button at the top edge of the Directory list to add a [sub-folder].  After creating it, select the sub-folder and click [Apply] to apply the selected path to your project as shown below.
 
 ![install-setup](webgenai/images/create_project_select_directory.png)
 
-Back in the Create Project dialog, update your projects `yaml` file by selecting the dropdown menu and specify `Create a YAML file` from the list.  A text editor is presented.  In the edit form, paste in your Docker Composer `yaml` file.  You must click [Verify YAML] before clicking [Apply].
+Back in the Create Project dialog, update your projects `yaml` file by selecting the dropdown menu to specify `Create a YAML file` from the list.  A text editor is presented allowing you to build the file.  You can paste in your Docker Composer `yaml` file with your updates from in the prerequisites section, e.g., you CHATGPT API key, and Webgenie license key.  You must click [Verify YAML] before clicking [Apply].
 
 ![install-setup](webgenai/images/create_project_select_yaml_location.png)
 
