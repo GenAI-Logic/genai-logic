@@ -10,8 +10,8 @@ from sqlalchemy.ext.declarative import declarative_base
 # Alter this file per your database maintenance policy
 #    See https://apilogicserver.github.io/Docs/Project-Rebuild/#rebuilding
 #
-# Created:  March 14, 2025 17:05:02
-# Database: sqlite:////Users/val/dev/ApiLogicServer/ApiLogicServer-dev/build_and_test/ApiLogicServer/samples/nw_sample_nocust/database/db.sqlite
+# Created:  August 18, 2026 16:34:24
+# Database: sqlite:////Users/val/dev/ApiLogicServer/ApiLogicServer-dev/build_and_test/genai-logic/samples/nw_sample_nocust/database/db.sqlite
 # Dialect:  sqlite
 #
 # mypy: ignore-errors
@@ -56,6 +56,7 @@ class Category(Base):  # type: ignore
     # parent relationships (access parent)
 
     # child relationships (access children)
+    ProductList : Mapped[List["Product"]] = relationship(back_populates="Category")
 
 
 
@@ -134,29 +135,6 @@ class Location(Base):  # type: ignore
 
     # child relationships (access children)
     OrderList : Mapped[List["Order"]] = relationship(back_populates="Location")
-
-
-
-class Product(Base):  # type: ignore
-    __tablename__ = 'Product'
-    _s_collection_name = 'Product'  # type: ignore
-
-    Id = Column(Integer, primary_key=True)
-    ProductName = Column(String(8000))
-    SupplierId = Column(Integer, nullable=False)
-    CategoryId = Column(Integer, nullable=False)
-    QuantityPerUnit = Column(String(8000))
-    UnitPrice : DECIMAL = Column(DECIMAL, nullable=False)
-    UnitsInStock = Column(Integer, nullable=False)
-    UnitsOnOrder = Column(Integer, nullable=False)
-    ReorderLevel = Column(Integer, nullable=False)
-    Discontinued = Column(Integer, nullable=False)
-    UnitsShipped = Column(Integer)
-
-    # parent relationships (access parent)
-
-    # child relationships (access children)
-    OrderDetailList : Mapped[List["OrderDetail"]] = relationship(back_populates="Product")
 
 
 
@@ -314,6 +292,30 @@ class Employee(Base):  # type: ignore
 
 
 
+class Product(Base):  # type: ignore
+    __tablename__ = 'Product'
+    _s_collection_name = 'Product'  # type: ignore
+
+    Id = Column(Integer, primary_key=True)
+    ProductName = Column(String(8000))
+    SupplierId = Column(Integer, nullable=False)
+    CategoryId = Column(ForeignKey('CategoryTableNameTest.Id'), nullable=False)
+    QuantityPerUnit = Column(String(8000))
+    UnitPrice : DECIMAL = Column(DECIMAL, nullable=False)
+    UnitsInStock = Column(Integer, nullable=False)
+    UnitsOnOrder = Column(Integer, nullable=False)
+    ReorderLevel = Column(Integer, nullable=False)
+    Discontinued = Column(Integer, nullable=False)
+    UnitsShipped = Column(Integer)
+
+    # parent relationships (access parent)
+    Category : Mapped["Category"] = relationship(back_populates=("ProductList"))
+
+    # child relationships (access children)
+    OrderDetailList : Mapped[List["OrderDetail"]] = relationship(back_populates="Product")
+
+
+
 class EmployeeAudit(Base):  # type: ignore
     __tablename__ = 'EmployeeAudit'
     _s_collection_name = 'EmployeeAudit'  # type: ignore
@@ -398,8 +400,8 @@ class OrderDetail(Base):  # type: ignore
     _s_collection_name = 'OrderDetail'  # type: ignore
 
     Id = Column(Integer, primary_key=True)
-    OrderId = Column(ForeignKey('Order.Id'), nullable=False, index=True)
-    ProductId = Column(ForeignKey('Product.Id'), nullable=False, index=True)
+    OrderId = Column(ForeignKey('Order.Id'), nullable=False)
+    ProductId = Column(ForeignKey('Product.Id'), nullable=False)
     UnitPrice : DECIMAL = Column(DECIMAL)
     Quantity = Column(Integer, server_default=text("1"), nullable=False)
     Discount = Column(Double, server_default=text("0"))

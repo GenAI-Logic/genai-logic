@@ -10,13 +10,17 @@ You do not normally need to alter this file
 
 """
 from config.config import Args
-from confluent_kafka import Producer
+try:
+    from confluent_kafka import Producer, KafkaException
+except ImportError:
+    Producer = None
+    KafkaException = None
+    # Kafka support not available on this platform
 import socket
-import logging
+import logging, os
 from logic_bank.exec_row_logic.logic_row import LogicRow
 from integration.system.RowDictMapper import RowDictMapper
 from flask import jsonify
-from confluent_kafka import Producer, KafkaException
 import api.system.api_utils as api_utils
 
 producer = None
@@ -25,8 +29,11 @@ producer = None
 conf = None
 """ filled from config (KAFKA_CONNECT) """
 
-logger = logging.getLogger('integration.n8n')
-logger.debug("kafka_connect imported")
+logger = logging.getLogger('integration.kafka')
+if Producer is None:
+    logger.fatal("SEVERE WARNING - KAFKA NOT AVAILABLE FOR IMPORT - DISABLED")
+else:
+    logger.debug("kafka_connnect imported")
 
 def kafka_producer():
     """
@@ -44,8 +51,12 @@ def kafka_producer():
         if "client.id" not in conf:
             conf["client.id"] = socket.gethostname()
         # conf = {'bootstrap.servers': 'localhost:9092', 'client.id': socket.gethostname()}
-        producer = Producer(conf)
-        logger.debug(f'\nKafka producer connected')
+        try:
+            producer = Producer(conf)
+            logger.debug(f'\nKafka producer connected')
+        except Exception as ke:
+            logger.debug(f'Kafka producer error: {ke}')
+            producer = None
 
 from sqlalchemy.inspection import inspect
 
@@ -64,7 +75,7 @@ def get_primary_key(logic_row: LogicRow):
 
 
 def send_kafka_message(kafka_topic: str, kafka_key: str = None, msg: str="", json_root_name: str = "", 
-                       logic_row: LogicRow = None, row_dict_mapper: RowDictMapper = None, payload: dict = None):
+                        logic_row: LogicRow = None, row_dict_mapper: RowDictMapper = None, payload: dict = None):
     """ Send Kafka message regarding logic_row, mapped by row_dict_mapper
 
     * Typically called from declare_logic event
@@ -78,7 +89,10 @@ def send_kafka_message(kafka_topic: str, kafka_key: str = None, msg: str="", jso
         json_root_name (str, optional): json name for json payload root; default is logic_row.name
     """
 
-
+    if '1' == os.getenv("APILOGICPROJECT_NO_FLASK", None):
+        logger.debug("kafka_producer#send_kafka_message: not safrs class (e.g. database/test_data/test_data_code.py)")
+        return
+    
     if isinstance(payload, dict):
         row_obj_dict = payload
     elif row_dict_mapper is not None:
@@ -96,7 +110,7 @@ def send_kafka_message(kafka_topic: str, kafka_key: str = None, msg: str="", jso
             root_name = logic_row.name
 
     if kafka_key is None:
-        kafka_key = get_primary_key(logic_row) 
+        kafka_key = str(get_primary_key(logic_row))
 
     log_msg = msg if msg != "" else f"Sending {root_name} to Kafka topic '{kafka_topic}'" 
 
@@ -104,15 +118,60 @@ def send_kafka_message(kafka_topic: str, kafka_key: str = None, msg: str="", jso
     log_msg = log_msg
     if producer:  # enabled in config/config.py?
         try:
-            producer.produce(value=json_string, topic="order_shipping", key=kafka_key)
+            producer.produce(value=json_string, topic=kafka_topic, key=kafka_key)
+            outstanding = producer.flush(timeout=10)  # ensure message is actually sent (not just buffered)
+            if outstanding > 0:
+                logger.error(f"kafka_producer#send_kafka_message: {outstanding} messages NOT delivered to topic '{kafka_topic}'")
+            else:
+                logger.debug(f"kafka_producer#send_kafka_message: delivered to topic '{kafka_topic}'")
             if logic_row:
                 logic_row.log(log_msg)
         except KafkaException as ke:
-            logger.error("kafka_producer#send_kafka_message error: {ke}") 
+            logger.error(f"kafka_producer#send_kafka_message error: {ke}") 
     else:
         log_msg += " [Note: **Kafka not enabled** ]"
     if logic_row is not None:
         logic_row.log(f'{log_msg}')
+    logger.debug(f'\n\n{log_msg}\n{json_string}')
+
+
+def publish_kafka_message(topic: str, logic_row: LogicRow, mapper=None):
+    """
+    Publish a message to a Kafka topic using the EAI publish pattern.
+
+    Args:
+        topic:      Kafka topic name
+        logic_row:  the LogicRow being processed
+        mapper:     optional publish mapper module from kafka_publish_discovery/
+                    (must expose row_to_dict(row) → dict and import EaiPublishMapper).
+                    If None, sends primary key only: {"id": 42}
+    """
+    import json
+
+    if mapper is not None:
+        payload = mapper.row_to_dict(logic_row.row)
+    else:
+        payload = get_primary_key(logic_row)
+
+    json_string = json.dumps(payload, default=str)
+    kafka_key = str(get_primary_key(logic_row))
+    log_msg = f"publish_kafka_message: topic='{topic}', key={kafka_key}"
+
+    if producer:
+        try:
+            producer.produce(value=json_string, topic=topic, key=kafka_key)
+            outstanding = producer.flush(timeout=10)
+            if outstanding > 0:
+                logger.error(f"publish_kafka_message: {outstanding} messages NOT delivered to topic '{topic}'")
+            else:
+                logger.debug(f"publish_kafka_message: delivered to topic '{topic}'")
+        except KafkaException as ke:
+            logger.error(f"publish_kafka_message error: {ke}")
+    else:
+        log_msg += " [Note: **Kafka not enabled**]"
+
+    if logic_row is not None:
+        logic_row.log(log_msg)
     logger.debug(f'\n\n{log_msg}\n{json_string}')
 
 

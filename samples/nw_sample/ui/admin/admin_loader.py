@@ -22,9 +22,11 @@ def get_sra_directory(args: Args) -> str:
     1. in the venv (from install or Docker) -- the normal case (small projects, less git)
     2. local to project: ui/safrs-react-admin
     3. in env(APILOGICSERVER_HOME | APILOGICPROJECT_APILOGICSERVER_HOME)
+        * eg, ...ApiLogicServer/venv/lib/python3.12/site-packages
     
     This enables the sra code to be re-used, reducing app size 32MB -> 2.5 MB
     """
+    admin_logger.debug("get_sra_directory - finding sra")
     directory = os.environ.get("APILOGICPROJECT_SRA", 'ui/safrs-react-admin')  # local project sra typical API Logic Server path (index.yaml)
     if Path(directory).joinpath('robots.txt').is_file():
         admin_logger.debug("return_spa - using local directory")
@@ -140,7 +142,7 @@ def admin_events(flask_app: Flask, args: Args, validation_error: ValidationError
                 if "keycloak" in provider_name:
                     s = (f'\n'
                         f'  keycloak:\n'
-                        f'    url: {args.keycloak_base_url}\n'
+                        f'    url: {args.keycloak_base}\n'
                         f'    realm: {args.keycloak_realm}\n'
                         f'    clientId: {args.keycloak_client_id}\n'
                     )   
@@ -148,6 +150,8 @@ def admin_events(flask_app: Flask, args: Args, validation_error: ValidationError
                 elif "sql" in provider_name:
                     sql_auth_config = f'\n  endpoint: {args.http_scheme}://{args.swagger_host}:{args.swagger_port}/{args.api_prefix[1:]}/auth/login\n'
                     content = content.replace("'{system-default}'", sql_auth_config)
+                elif getattr(Config.SECURITY_PROVIDER, 'auth_config', None):
+                    content = content.replace("'{system-default}'", Config.SECURITY_PROVIDER.auth_config)
                 else:
                     sys.exit(f"ERROR[admin_loader]: unknown security type: {Config.SECURITY_PROVIDER}")         
 
@@ -198,16 +202,6 @@ def admin_events(flask_app: Flask, args: Args, validation_error: ValidationError
                 #"access-control-allow-origin, authorization, content-type
         response.headers["Access-Control-Expose-Headers"] = "X-Auth-Token, Content-disposition, X-Requested-With"
         #response.headers["Content-Type"] = "application/json, text/html"
-        
-        # This is a short cut to auto login to Ontimize
-        try:
-            #from security.system.authentication import access_token
-            from flask import g
-            if "access_token" in g:
-                response.headers["X-Auth-Token"] = g.access_token  # required for Ontimize (kludge alert)
-        except:
-            logging.error('\nadmin_loader - after_request - access_token not set\n')
-
         
         admin_logger.debug(f'cors after_request - response: {str(response)}')
         return response

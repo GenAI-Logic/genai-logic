@@ -1,5 +1,5 @@
 about:
-  date: March 14, 2025 17:05:01
+  date: August 18, 2026 16:34:24
   recent_changes: works with modified safrs-react-admin
   version: 0.0.0
 api_root: '{http_type}://{swagger_host}:{port}/{api}'
@@ -102,7 +102,7 @@ settings:
     currency_symbol_position: left
     date_format: LL
     decimal_max: '1000000000'
-    decimal_min: '0'
+    decimal_min: '2'
     decimal_separator: .
     detail_mode: tab
     edit_on_mode: dblclick
@@ -117,7 +117,7 @@ settings:
     new_mode: dialog
     pick_style: list
     row_height: small,
-    serviceType: OntimizeEE
+    serviceType: JSONAPI
     startSessionPath: /auth/login
     style: light
     thousand_separator: ','

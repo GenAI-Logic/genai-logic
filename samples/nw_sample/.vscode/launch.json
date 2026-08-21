@@ -5,8 +5,9 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "ApiLogicServer",
+            "name": "Run Project (start server)",
             "type": "debugpy",
+            "python": "${command:python.interpreterPath}",
             "cwd": "${workspaceFolder}",
             "env": {
                 "PYTHONPATH": "", 
@@ -20,11 +21,40 @@
             "justMyCode": false,
             "args": ["--flask_host=localhost", "--port=5656", "--swagger_port=5656", "--swagger_host=localhost", "--verbose=False"],
             "console": "internalConsole",
-            "internalConsoleOptions": "openOnSessionStart"
+            "internalConsoleOptions": "openOnSessionStart",
+            "serverReadyAction": {
+                "action": "openIntegratedBrowser",
+                "pattern": "http://localhost:(\\d+)"
+            }
+        },
+        {
+            "name": "Run Project DEBUG",
+            "type": "debugpy",
+            "python": "${command:python.interpreterPath}",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "PYTHONPATH": "", 
+                "EXPERIMENT": "",
+                "PYTHONHASHSEED": "0", 
+                "APILOGICPROJECT_LOGGING_CONFIG": "config/logging.yml",
+                "APILOGICPROJECT_STOP_OK": "True",
+                "APILOGICPROJECT_DEBUG": "True"},
+            "request": "launch",
+            "program": "api_logic_server_run.py",
+            "redirectOutput": true,
+            "justMyCode": false,
+            "args": ["--flask_host=localhost", "--port=5656", "--swagger_port=5656", "--swagger_host=localhost", "--verbose=False"],
+            "console": "internalConsole",
+            "internalConsoleOptions": "openOnSessionStart",
+            "serverReadyAction": {
+                "action": "openIntegratedBrowser",
+                "pattern": "http://localhost:(\\d+)"
+            }
         },
         {
             "name": "  - API Logic Server - VERBOSE",
             "type": "debugpy",
+            "python": "${command:python.interpreterPath}",
             "request": "launch",
             "cwd": "${workspaceFolder}",
             "program": "api_logic_server_run.py",
@@ -38,11 +68,16 @@
             "justMyCode": false,
             "args": ["--flask_host=localhost", "--port=5656", "--swagger_port=5656", "--swagger_host=localhost", "--verbose=True"],
             "console": "internalConsole",
-            "internalConsoleOptions": "openOnSessionStart"
+            "internalConsoleOptions": "openOnSessionStart",
+            "serverReadyAction": {
+                "action": "openIntegratedBrowser",
+                "pattern": "http://localhost:(\\d+)"
+            }
         },
         {
             "name": "  - No Security ApiLogicServer (e.g., simpler swagger)",
             "type": "debugpy",
+            "python": "${command:python.interpreterPath}",
             "request": "launch",
             "program": "api_logic_server_run.py",
             "redirectOutput": true,
@@ -55,11 +90,16 @@
             "justMyCode": false,
             "args": ["--flask_host=localhost", "--port=5656", "--swagger_port=5656", "--swagger_host=localhost", "--verbose=False"],
             "console": "internalConsole",
-            "internalConsoleOptions": "openOnSessionStart"
+            "internalConsoleOptions": "openOnSessionStart",
+            "serverReadyAction": {
+                "action": "openIntegratedBrowser",
+                "pattern": "http://localhost:(\\d+)"
+            }
         },
         {
             "name": "  - No Security ApiLogicServer VERBOSE",
             "type": "debugpy",
+            "python": "${command:python.interpreterPath}",
             "request": "launch",
             "program": "api_logic_server_run.py",
             "redirectOutput": true,
@@ -73,10 +113,15 @@
             "justMyCode": false,
             "args": ["--flask_host=localhost", "--port=5656", "--swagger_port=5656", "--swagger_host=localhost", "--verbose=False"],
             "console": "internalConsole",
-            "internalConsoleOptions": "openOnSessionStart"
+            "internalConsoleOptions": "openOnSessionStart",
+            "serverReadyAction": {
+                "action": "openIntegratedBrowser",
+                "pattern": "http://localhost:(\\d+)"
+            }
         },
         {
-            "name": "  - test/basic/server_test.py",
+            "name": "Test - test/basic/server_test.py",
+// use this for test programs, eg to test the server
             "type": "debugpy",
             "request": "launch",
             "cwd": "${workspaceFolder}",
@@ -88,34 +133,30 @@
             "internalConsoleOptions": "openOnSessionStart"
         },
         {
-            "name": "Install Ontimize (npm install)",
-            "type": "node",
-            "request": "launch",
-            "cwd": "${workspaceFolder}/ui/app",
-            "runtimeExecutable": "npm",
-            "runtimeArgs": ["install"],
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "  - Start Ontimize (npm start)",
-            "type": "node",
-            "request": "launch",
-            "cwd": "${workspaceFolder}/ui/app",
-            "runtimeExecutable": "npm",
-            "runtimeArgs": ["start"],
-            "restart": true,
-            "timeout": 30000,
-            "console": "integratedTerminal",
-            "env": {
-                "NODE_ENV": "development"
-            }
-        },
-        {
-            "name": "  - Rebuild app from altered model (overwrites app)",
-            "type": "node-terminal",
+            "name": "  - Run designated Python file",
+// use this for test programs, eg to test the server
+            "type": "debugpy",
             "request": "launch",
             "cwd": "${workspaceFolder}",
-            "command": "als app-build --app=app"
+            "program": "${input:inputProjectName}",
+            "redirectOutput": true,
+            "justMyCode": false,
+            "args": ["go"],
+            "console": "internalConsole",
+            "internalConsoleOptions": "openOnSessionStart"
+        },
+        {
+            "name": "MCP - Model Context Protocol - Client Executor",
+// a simple client to test the Model Context Protocol, default request for basic_demo
+            "type": "debugpy",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "program": "integration/mcp/mcp_client_executor.py",
+            "redirectOutput": true,
+            "justMyCode": false,
+            "args": ["list customers with balance over 100"],
+            "console": "internalConsole",
+            "internalConsoleOptions": "openOnSessionStart"
         },
         {
             "name": "Behave Run",
@@ -134,7 +175,7 @@
             "name": "  - Behave No Security",
             "type": "debugpy",
             "request": "launch",
-            "env": {"SECURITY_ENABLED": "False"},
+            // now picked up from config: "env": {"SECURITY_ENABLED": "False"},
             "cwd": "${workspaceFolder}/test/api_logic_server_behave",
             "program": "${workspaceFolder}/test/api_logic_server_behave/behave_run.py",
             "redirectOutput": true,
@@ -249,6 +290,20 @@
             "args": ["sys-info"],
             "justMyCode": false,
             "console": "integratedTerminal"
+        }
+    ],
+    "inputs": [
+        {
+            "id": "inputProjectName",
+            "type": "promptString",
+            "description": "Python File Name to Run",
+            "default": "integration/mcp/mcp_client_executor.py"
+        },
+        {
+            "id": "inputMcpRequest",
+            "type": "promptString",
+            "description": "Request for MCP Client Executor",
+            "default": "find customers with balance over 500"
         }
     ]
 }

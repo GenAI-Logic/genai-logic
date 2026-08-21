@@ -1,37 +1,56 @@
 #!/usr/bin/env python3
 
 ###############################################################################
+# 🚀 API Logic Server - AUTO-GENERATED MICROSERVICE
 #
-#    This file initializes and starts the API Logic Server, e.g.:
-#        $ Use your IDE Run Configurations (for debug)
-#        $ sh run.sh
-#        $ python3 api_logic_server_run.py [--help]
-#        $ gunicorn --log-level=info -b 0.0.0.0:5656 -w2 --reload api_logic_server_run:flask_app
+# This file starts a COMPLETE, WORKING microservice with:
+#   ✅ Admin Web App at http://localhost:5656 (React-based, multi-table CRUD)
+#   ✅ JSON:API endpoints at http://localhost:5656/api/* (auto-generated from database)
+#   ✅ Swagger documentation at http://localhost:5656/api
+#   ✅ Business logic engine (declarative rules)
+#   ✅ Security framework (authentication/authorization)
 #
-#    Then, access the Admin App and API via the Browser, eg:  
-#        http://localhost:5656
+# 🎯 TO RUN:
+#    Press F5 in VSCode, or run: python api_logic_server_run.py
+#
+# 🌐 TO ACCESS:
+#    Admin App: http://localhost:5656
+#    API Docs:  http://localhost:5656/api
+#
+# 📝 TO CUSTOMIZE:
+#    See docs/COPILOT_GUIDE.md for GitHub Copilot guidance
+#    Logic: logic/declare_logic.py
+#    API: api/customize_api.py
+#    Security: security/declare_security.py
 #
 #    You typically do not customize this file.
 #
-#    (v 14.03.16, March 14, 2025 17:05:02)
+#    (v 15.00.38, July 06, 2025 22:11:00)
 #
 #    See Main Code (at end).
 #        Use log messages to understand API and Logic activation.
 #
 ###############################################################################
 
-api_logic_server__version = '14.03.16'
-api_logic_server_created__on = 'March 14, 2025 17:05:02'
+api_logic_server__version = '17.03.189'
+api_logic_server_created__on = 'August 18, 2026 16:34:24'
 api_logic_server__host = 'localhost'
 api_logic_server__port = '5656'
 
 start_up_message = "normal start"
 
-import os, logging, logging.config, sys, yaml  # failure here means venv probably not set
+import sys, os  # export APILOGICPROJECT_DEBUG=True && python3 api_logic_server_run.py
+if os.environ.get("APILOGICPROJECT_DEBUG", "False") == "True":
+    # to verify - export APILOGICPROJECT_DEBUG=True && python3 api_logic_server_run.py
+    # consider running from manager: genai-logic run <project>
+    print(f"\nPython interpreter: {sys.executable}\n")
+
+import logging, logging.config, yaml  # failure here means venv probably not set
+
 from flask_sqlalchemy import SQLAlchemy
 import json
 from pathlib import Path
-from config.config import Args
+from config.config import Args  # sets up logging
 from config import server_setup
 
 current_path = os.path.abspath(os.path.dirname(__file__))
@@ -48,6 +67,28 @@ declare_logic_message = ""
 declare_security_message = "ALERT:  *** Security Not Enabled ***"
 
 os.chdir(project_dir)  # so admin app can find images, code
+
+# rotate log on startup: als.log -> als.log.1 (keeps one prior run)
+_log_file = Path(project_dir) / "logs" / "als.log"
+_log_file.parent.mkdir(exist_ok=True)
+if _log_file.exists():
+    _log_backup = _log_file.with_suffix(".log.1")
+    try:
+        if _log_backup.exists():
+            _log_backup.unlink()  # Remove old backup
+        _log_file.rename(_log_backup)
+    except (OSError, PermissionError):
+        pass  # Skip rotation if file is locked (e.g., debugger restart)
+from datetime import datetime as _dt
+_log_file.write_text(
+    f"=== Server Start: {_dt.now().strftime('%Y-%m-%d %H:%M:%S')} ===\n"
+    f"    Project : {project_name}\n"
+    f"    Version : {api_logic_server__version}\n"
+    f"    Python  : {sys.executable}\n"
+    f"    Dir     : {project_dir}\n"
+    f"{'=' * 50}\n\n"
+)
+
 import api.system.api_utils as api_utils
 logic_logger_activate_debug = False
 """ True prints all rules on startup """
@@ -66,10 +107,17 @@ from flask import Flask, redirect, send_from_directory, send_file
 from flask_cors import CORS
 import ui.admin.admin_loader as AdminLoader
 from security.system.authentication import configure_auth
-import oracledb
+try:
+    import oracledb
+except ImportError:
+    oracledb = None
+    # Oracle support not available on this platform
 
+if os.getenv("EXPERIMENT") == '+':
+    app_logger = logging.getLogger("api_logic_server_app")
+else:
+    app_logger = server_setup.logging_setup()
 
-app_logger = server_setup.logging_setup()
 
 
 # ==================================
@@ -78,7 +126,7 @@ app_logger = server_setup.logging_setup()
 
 flask_app = Flask("API Logic Server", template_folder='ui/templates')  # templates to load ui/admin/admin.yaml
 
-CORS(flask_app, resources=[{r"/api/*": {"origins": "*"}},{r"/ontimizeweb/*": {"origins": "*"}}],
+CORS(flask_app, resources=[{r"/api/.*": {"origins": "*"}}],
      allow_headers=["Content-Type", "Authorization", "Access-Control-Allow-Credentials"],supports_credentials=True)
 
 args = server_setup.get_args(flask_app)                        # creation defaults
@@ -100,7 +148,7 @@ server_setup.api_logic_server_setup(flask_app, args)
 AdminLoader.admin_events(flask_app = flask_app, args = args, validation_error = ValidationError)
 
 if __name__ == "__main__":
-    msg = f'API Logic Project loaded (not WSGI), version: 14.03.16\n'
+    msg = f'API Logic Project loaded (not WSGI), version: 17.03.189\n'
     msg += f'.. startup message: {start_up_message}\n'
     if server_setup.is_docker():
         msg += f' (running from docker container at flask_host: {args.flask_host} - may require refresh)\n'
@@ -131,9 +179,12 @@ if __name__ == "__main__":
         app_logger.info(f'*   Startup Instructions: Open your Browser at: {start_up_message}')    
         app_logger.info(f'*************************************************************************\n')    
 
+    print("\n\n\n")
+    print(f"Server restarted: {_dt.now().strftime('%Y-%m-%d %H:%M:%S')}")
+
     flask_app.run(host=args.flask_host, threaded=True, port=args.port)
 else:
-    msg = f'API Logic Project Loaded (WSGI), version 14.03.16\n'
+    msg = f'API Logic Project Loaded (WSGI), version 17.03.189\n'
     msg += f'.. startup message: {start_up_message}\n'
 
     if server_setup.is_docker():

@@ -18,7 +18,10 @@ import requests  # not working - 404
 import json
 import sys
 import time
-from jwt.algorithms import RSAAlgorithm
+try:
+    from jwt.algorithms import RSAAlgorithm
+except ImportError:
+    RSAAlgorithm = None  # cryptography not available (e.g., Windows ARM64)
 from flask import g
 
 
@@ -78,7 +81,7 @@ class Authentication_Provider(Abstract_Authentication_Provider):
         from flask import jsonify, request
         from config.config import Args  # circular import error if at top
         
-        jwks_uri = Args.instance.keycloak_base + '/protocol/openid-connect/certs'
+        jwks_uri = Args.instance.keycloak_base_url + '/protocol/openid-connect/certs'
         for i in range(100):
             # we retry a couple of times in case there are connection problems
             try:

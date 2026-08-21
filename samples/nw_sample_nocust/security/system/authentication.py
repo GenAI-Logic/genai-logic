@@ -75,8 +75,6 @@ def configure_auth(flask_app: Flask, database: object, method_decorators: list[o
 
     jwt = JWTManager(flask_app)
     
-    @flask_app.route("/ontimizeweb/services/rest/auth/login", methods=["POST","OPTIONS"])
-    @flask_app.route("/ontimizeweb/services/rest/users/login", methods=["POST","OPTIONS"])
     @flask_app.route("/api/auth/login", methods=["POST"])
     @cross_origin(supports_credentials=False)
     def login():
@@ -112,7 +110,7 @@ def configure_auth(flask_app: Flask, database: object, method_decorators: list[o
             return jsonify("Wrong username or password"), 401
         
         access_token = create_access_token(identity=user)  # serialize and encode
-        from flask import g
+        from flask import g  # see https://www.geeksforgeeks.org/when-should-flask-g-be-used/
         g.access_token = access_token
         return jsonify(access_token=access_token)
     

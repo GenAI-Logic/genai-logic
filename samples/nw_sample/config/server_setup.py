@@ -9,6 +9,24 @@
 #
 ###############################################################################
 
+"""
+Operation:
+    1. api_logic_server_run.py - imports config
+        1. captures args
+    2. api_logic_server_run.py - imports server_setup
+        1. server_setup#logging_setup()
+    3. api_logic_server_run.py - server_setup.api_logic_server_setup
+On error, NOT CALLED: constraint_handler or ValidationErrorExt (!)
+
++ Operation:
+    1. api_logic_server_run.py - imports config
+        1. captures args
+        1. config#logging_setup()
+    2. api_logic_server_run.py - imports server_setup
+    3. api_logic_server_run.py - server_setup.api_logic_server_setup
+
+"""
+
 start_up_message = "normal start"
 
 import traceback
@@ -25,6 +43,8 @@ except:
 from flask_sqlalchemy import SQLAlchemy
 import json
 from pathlib import Path
+if os.getenv("EXPERIMENT") == '+':
+    import config
 from config.config import Args
 
 
@@ -82,11 +102,18 @@ from safrs import ValidationError, SAFRSBase, SAFRSAPI
 import ui.admin.admin_loader as AdminLoader
 from security.system.authentication import configure_auth
 import database.bind_dbs as bind_dbs
-import oracledb
+try:
+    import oracledb
+except ImportError:
+    oracledb = None
+    # Oracle support not available on this platform
 import integration.kafka.kafka_producer as kafka_producer
 import integration.kafka.kafka_consumer as kafka_consumer
 import integration.n8n.n8n_producer as n8n_producer
 
+
+if os.getenv("EXPERIMENT") == '+':
+    app_logger = logging.getLogger("api_logic_server_app")
 
 
 class SAFRSAPI(_SAFRSAPI):
@@ -121,7 +148,7 @@ def get_args(flask_app: Flask) -> Args:
 
     import config.config as config
     flask_app.config.from_object(config.Config)
-    app_logger.debug(f"\nserver_setup - get_args: Config args: \n{args}")  # FIXME                  # config file (e.g., db uri's)
+    app_logger.debug(f"\nserver_setup - get_args: Config args: \n{args}")  #                 # config file (e.g., db uri's)
 
     args.get_cli_args(dunder_name=__name__, args=args)
     app_logger.debug(f"\nserver_setup - get_args: CLI args: \n{args}")                       # api_logic_server_run cl args
@@ -151,6 +178,75 @@ def get_args(flask_app: Flask) -> Args:
 #       LOGGING SETUP
 # ================================== 
 
+import site
+
+# Auto-detect venv site-packages path
+import logging
+import site
+
+venv_path = site.getsitepackages()[0]
+venv_alias = "$venv"
+app_path = str(Path(__file__).parent.parent)
+app_alias = ""
+max_len = 100  # max length of a line in stacktrace
+
+# Patch stacktrace formatters to replace venv path with alias
+def patch_stacktrace_formatters():
+    """
+    Patch only the formatException method of each formatter,
+    so only stacktraces are affected, not normal log lines.
+    """
+    import logging
+
+    def short_format_exception(self, exc_info):
+        result = logging.Formatter.formatException(self, exc_info)
+        lines = result.splitlines('\n')
+        line_num = 0
+        for each_line in lines:
+            follow_link = ""
+            if '1906' in each_line:
+                pass # good breakpoint
+            if venv_path in each_line:                
+                # get the string inside the double quotes
+                if '"' in each_line:
+                    follow_link = '\tFollow link: ' + each_line.split('"')[1] + ']'
+                # Replace the venv_path with venv_alias in the stacktrace line
+                each_line = each_line.replace('"' + venv_path, venv_alias)
+                each_line = each_line.replace('File ', '')  # replace project path with name
+                each_line = each_line.replace('", line ', ' @ ')
+                each_line = each_line.replace('^', '')
+                each_line = each_line.replace('\n', '')
+                lines[line_num] = each_line
+            elif app_path in each_line:
+                if '"' in each_line:
+                    follow_link = '\tFollow link: ' + each_line.split('"')[1] + ']'
+                each_line = each_line.replace('"' + app_path, app_alias)
+                each_line = each_line.replace('File ', '')
+                each_line = each_line.replace('", line ', ' @ ')
+                each_line = each_line.replace('\n', '')
+                lines[line_num] = each_line
+            elif '^^' in each_line:
+                lines[line_num] = ""
+            elif 'File "<string>", line' in each_line:
+                lines[line_num] = ""
+            # add spaces for 90 characters
+            if len(lines[line_num]) < max_len and lines[line_num] != "" and follow_link != "":
+                lines[line_num] = lines[line_num] + ' ' * (max_len - len(lines[line_num]))
+            lines[line_num] += follow_link
+            line_num += 1
+        result = ''.join(lines)
+        return result
+    
+    # Patch the formatException method of all formatters in the root logger
+
+    root_logger = logging.getLogger()
+    for handler in root_logger.handlers:
+        fmt = handler.formatter
+        if fmt and not hasattr(fmt, "_stacktrace_patched"):
+            fmt.formatException = short_format_exception.__get__(fmt)
+            fmt._stacktrace_patched = True
+
+
 def logging_setup() -> logging.Logger:
     """
     Setup Logging
@@ -164,6 +260,10 @@ def logging_setup() -> logging.Logger:
             f.close()
     logging.config.dictConfig(config)  # log levels: notset 0, debug 10, info 20, warn 30, error 40, critical 50
     app_logger = logging.getLogger("api_logic_server_app")
+
+    if do_truncate_venv_path := True:   # use False for standard Python logging in stacktrace
+        patch_stacktrace_formatters()
+
     debug_value = os.getenv('APILOGICPROJECT_DEBUG')
     if debug_value is not None:  # > export APILOGICPROJECT_DEBUG=True
         debug_value = debug_value.upper()
@@ -190,6 +290,9 @@ class ValidationErrorExt(ValidationError):
         self.message = message
         self.api_code = api_code
         self.detail: TypedDict = detail
+
+    def __str__(self):
+        return self.message
 
 
 def validate_db_uri(flask_app):
@@ -350,5 +453,14 @@ def api_logic_server_setup(flask_app: Flask, args: Args):
         safrs.log.setLevel(safrs_log_level)
         db_logger.setLevel(db_log_level)
         authorization_logger.setLevel(authorization_log_level)
+
+        if os.getenv('APILOGICPROJECT_DEBUG'):  # temp debug since logging in config is not happening
+            KAFKA_SERVER = os.getenv('KAFKA_SERVER')
+            is_empty = False
+            if KAFKA_SERVER is not None:
+                is_empty = KAFKA_SERVER == ""
+            is_none = KAFKA_SERVER is None
+            app_logger.debug(f'\nDEBUG KAFKA_SERVER: [{KAFKA_SERVER}] (is_empty: {is_empty}) (is_none: {is_none}) \n')
+            app_logger.debug(f'... Args.instance.kafka_producer: {Args.instance.kafka_producer}\n')
 
 

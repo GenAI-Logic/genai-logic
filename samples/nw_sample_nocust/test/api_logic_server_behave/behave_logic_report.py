@@ -92,19 +92,76 @@ def show_logic(scenario: str, logic_logs_dir: str):
         with open(logic_file_name) as logic:
             logic_lines = logic.readlines()
         is_logic_log = True
-        for each_logic_line in logic_lines:
-            each_logic_line = remove_trailer(each_logic_line)
-            if is_logic_log:
-                if "Rules Fired" in each_logic_line:
-                    is_logic_log = False
-                    continue
-                else:
-                    logic_log.append(each_logic_line)
+        last_rules_start = -1
+        last_rules_end = -1
+        
+        # Find ALL "These Rules Fired" sections and choose the one with the most rules
+        rules_sections = []
+        i = 0
+        while i < len(logic_lines):
+            if "These Rules Fired" in logic_lines[i]:
+                start_pos = i + 1
+                # Find the end of this rules section
+                end_pos = start_pos
+                while end_pos < len(logic_lines):
+                    if 'Logic Phase:' in logic_lines[end_pos] and 'COMPLETE' in logic_lines[end_pos]:
+                        break
+                    end_pos += 1
+                
+                # Count non-empty rule lines in this section (after removing trailers)
+                rule_count = 0
+                for j in range(start_pos, end_pos):
+                    line = remove_trailer(logic_lines[j]).strip()
+                    if line and not line.startswith('Logic Phase:'):
+                        rule_count += 1
+                
+                rules_sections.append({
+                    'start': start_pos,
+                    'end': end_pos,
+                    'rule_count': rule_count
+                })
+                i = end_pos
             else:
-                if 'logic_logger - INFO' in each_logic_line:
-                    pass
+                i += 1
+        
+        # Choose the section with the most rules
+        if rules_sections:
+            best_section = max(rules_sections, key=lambda x: x['rule_count'])
+            last_rules_start = best_section['start']
+            last_rules_end = best_section['end']
+            # Find where the "These Rules Fired" line is (one line before rules start)
+            rules_fired_line = last_rules_start - 1
+            # Now search backwards to find the beginning of this logic section
+            logic_start_line = rules_fired_line - 1
+            while logic_start_line > 0:
+                line = logic_lines[logic_start_line].strip()
+                # Look for the start marker (usually after a blank line following "COMPLETE")
+                if 'Logic Phase:' in logic_lines[logic_start_line] and 'ROW LOGIC' in logic_lines[logic_start_line]:
+                    # Found the start of the logic section
+                    # Go back one more to include the header line (scenario name)
+                    if logic_start_line > 0 and logic_lines[logic_start_line-1].strip():
+                        logic_start_line -= 1
                     break
-                wiki_data.append(each_logic_line + "  ")
+                logic_start_line -= 1
+        else:
+            last_rules_start = -1
+            last_rules_end = -1
+            logic_start_line = 0
+                    
+        # Now process the file, collecting logic log and extracting the rules section
+        for i, each_logic_line in enumerate(logic_lines):
+            each_logic_line = remove_trailer(each_logic_line)
+            
+            # Collect logic log from the best section
+            if rules_sections and logic_start_line <= i < rules_fired_line:
+                logic_log.append(each_logic_line)
+            
+            # Extract rules from the last "These Rules Fired" section
+            if last_rules_start <= i < last_rules_end:
+                # Skip empty lines
+                if each_logic_line.strip():
+                    wiki_data.append(each_logic_line + "  ")
+        
         wiki_data.append("```")
         wiki_data.append(f'**Logic Log** in Scenario: {scenario}')
         wiki_data.append("```")
@@ -167,15 +224,21 @@ def main(behave_log: str, scenario_logs: str, wiki: str, prepend_wiki: str):
 
     just_saw_then = False
     current_scenario = ""
+    previous_scenario = ""
     for each_line in contents:
         if just_saw_then and each_line == "\n":
             show_logic(scenario=current_scenario, logic_logs_dir=scenario_logs)
-        just_saw_then = False
+            just_saw_then = False
+            previous_scenario = ""
         if each_line.startswith("Feature"):
             wiki_data.append("&nbsp;")
             wiki_data.append("&nbsp;")
             each_line = "## " + each_line
         if each_line.startswith("  Scenario"):
+            # Before starting new scenario, show logic for previous one if we saw Then
+            if just_saw_then and previous_scenario:
+                show_logic(scenario=previous_scenario, logic_logs_dir=scenario_logs)
+            just_saw_then = False
             each_line = tab + each_line
         if each_line.startswith("    Given") or \
                 each_line.startswith("    When") or \
@@ -191,6 +254,7 @@ def main(behave_log: str, scenario_logs: str, wiki: str, prepend_wiki: str):
         each_line = each_line.rstrip()
         if "Scenario" in each_line:
             current_scenario = each_line[18:]
+            previous_scenario = current_scenario
             wiki_data.append("&nbsp;")
             wiki_data.append("&nbsp;")
             wiki_data.append("### " + each_line[8:])
@@ -198,6 +262,10 @@ def main(behave_log: str, scenario_logs: str, wiki: str, prepend_wiki: str):
         each_line = each_line + "  "  # wiki for "new line"
         
         wiki_data.append(each_line)
+    
+    # Show logic for the last scenario if we saw Then
+    if just_saw_then and current_scenario:
+        show_logic(scenario=current_scenario, logic_logs_dir=scenario_logs)
 
     with open(wiki, 'w') as rpt:
         rpt.write('\n'.join(wiki_data))

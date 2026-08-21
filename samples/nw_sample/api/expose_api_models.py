@@ -4,6 +4,8 @@ import importlib
 import pathlib
 import logging as logging
 import flask_sqlalchemy
+from config.config import Args
+from config import config
 
 # use absolute path import for easier multi-{app,model,db} support
 database = __import__('database')
@@ -36,11 +38,11 @@ def expose_models(api, method_decorators = []):
         Invoked at server startup (api_logic_server_run -> config/server_setup)
 
         You typically do not customize this file
-        - See https://apilogicserver.github.io/Docs/Tutorial/#customize-and-debug
+        - See https://apilogicserver.github.io/Docs/Sample-Basic-Demo/#api-customization-standard
     """
 
     debug_inspect_list = inspect.getmembers(database.models)
-    pass
+
     # Get all the subclasses of the Base class and expose them in the api
     for name, obj in inspect.getmembers(database.models):
         if inspect.isclass(obj) and issubclass(obj, database.models.SAFRSBaseX) and obj is not database.models.SAFRSBaseX:

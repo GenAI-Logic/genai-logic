@@ -3,7 +3,13 @@ import threading, time
 import logging
 import sys
 import signal
-from confluent_kafka import Producer, KafkaException, Consumer
+try:
+    from confluent_kafka import Producer, KafkaException, Consumer
+except ImportError:
+    Producer = None
+    KafkaException = None
+    Consumer = None
+    # Kafka support not available on this platform
 
 ####
 # adapted from and thanks to: https://pypi.org/project/flask-kafka
@@ -43,7 +49,11 @@ class FlaskKafka():
             handlers = self.handlers[msg.topic()]
             for handler in handlers:
                 handler(msg = msg, safrs_api = self.safrs_api)
-            # self.consumer.commit()
+            # self.consumer.commit(asynchronous=False)
+            # DEV/DEMO: commit is intentionally disabled (enable.auto.commit=false in config).
+            # Effect: offsets are never committed, so server restart replays all messages from earliest.
+            # The is_processed guard on Consumer 2 makes replays a safe no-op (skips already-processed blobs).
+            # PRODUCTION: uncomment the commit line above for at-least-once delivery with no replays.
         except Exception as e:
             logger.critical(str(e), exc_info=1)
             # self.consumer.close()
@@ -62,15 +72,23 @@ class FlaskKafka():
 
         topics = self.handlers.keys()
         logger.info(f" - FlaskKafka._start: begin polling (v {__version__}), with \n -- conf: {self.conf} \n -- topics: {topics}")
-        consumer = Consumer(self.conf)
-        consumer.subscribe(topics=list(topics))
-        while True:
+        try:
+            consumer = Consumer(self.conf)
+            consumer.subscribe(topics=list(topics))
+        except Exception as e:
+            logger.critical(f"FlaskKafka._start: Consumer init/subscribe failed: {e}", exc_info=True)
+            return
+        while True and len(topics) > 0:
+            if self.interrupt_event.is_set():
+                logger.info("Kafka thread interrupted")
+                break
+    
             msg = consumer.poll(1.0)
-            logger.debug(f' - KafkaConnect._start - consuming consumer.poll(1.0): {msg}')
+            logger.debug(f' - KafkaConnect._start - consuming consumer.poll(1.0): {msg}') if msg else None
             if msg is None:
                 continue
             if msg.error():
-                pass  # Handle errors as needed
+                logger.warning(f" - FlaskKafka: msg.error() on topic {msg.topic()}: {msg.error()}")
             else:
                 self._run_handlers(msg)  # accrued per annotations
 
